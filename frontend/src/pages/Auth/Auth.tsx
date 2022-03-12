@@ -31,7 +31,7 @@ const Auth: React.FC = () => {
         />
 
         <div>
-          <CheckBox content="Remember me" id="remember" />
+          <CheckBox content="Remember me" />
           <a href="#1">Forgot password?</a>
         </div>
 
