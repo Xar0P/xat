@@ -1,0 +1,16 @@
+import styled from 'styled-components';
+
+export const Button = styled.button`
+  background-color: ${(props) => props.color};
+
+  padding: 0 12px;
+  text-align: center;
+
+  width: 300px;
+  height: 54px;
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  color: #fff;
+`;
