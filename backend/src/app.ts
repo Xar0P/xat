@@ -3,6 +3,8 @@ import cors from 'cors';
 import http from 'http';
 import { Server, Socket } from 'socket.io';
 
+import { User } from './routes';
+
 const allowedOrigin = 'http://localhost:3000';
 
 class App {
@@ -27,19 +29,21 @@ class App {
   }
 
   middlewares() {
-    this.app.use(cors({
-      origin: allowedOrigin,
-    }));
+    this.app.use(cors({ origin: allowedOrigin }));
+    this.app.use(express.urlencoded({ extended: false }));
+    this.app.use(express.json());
   }
 
   routes() {
     this.app.get('/', (req: express.Request, res: express.Response) => {
       res.send('<h1>Olá</h1>');
     });
+    this.app.use('/users/', User);
   }
 
   sockets() {
     this.io.on('connection', (socket: Socket) => {
+      // eslint-disable-next-line no-console
       console.log(`a user connected in ${socket.id}`);
     });
   }
