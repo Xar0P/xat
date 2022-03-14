@@ -3,7 +3,6 @@ import validator from 'validator';
 import bcryptjs from 'bcryptjs';
 import { PostgrestError } from '@supabase/supabase-js';
 
-import supabase from '../config/supabase';
 import { Users } from '../models';
 
 class User {
