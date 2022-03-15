@@ -1,14 +1,19 @@
 import supabase from '../config/supabase';
 
-interface User {
+export interface User {
   name: string,
   email: string,
-  password: string
+  password: string,
+}
+
+export interface UserDB extends User {
+  id: number
+  created_at: string
 }
 
 class Users {
   async create(user: User) {
-    const { data, error } = await supabase
+    const { data, error }: { data: UserDB[] | null, error: any } = await supabase
       .from('users')
       .insert([
         {
@@ -21,10 +26,28 @@ class Users {
     return { data, error };
   }
 
-  async read(query: keyof User | 'id' | '*') {
-    const { data, error } = await supabase
+  async read(query: keyof UserDB | '*') {
+    const { data, error }: { data: UserDB[] | null, error: any } = await supabase
       .from('users')
       .select(query);
+
+    return { data, error };
+  }
+
+  async update(newUser: Partial<User>, query: Partial<UserDB>) {
+    const { data, error } = await supabase
+      .from('users')
+      .update(newUser)
+      .match(query);
+
+    return { data, error };
+  }
+
+  async delete(query: Partial<UserDB>) {
+    const { data, error } = await supabase
+      .from('users')
+      .delete()
+      .match(query);
 
     return { data, error };
   }

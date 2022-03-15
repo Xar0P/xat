@@ -7,7 +7,21 @@ import { Users } from '../models';
 
 class User {
   async index(req: Request, res: Response) {
-    res.send('Opa');
+    const errors: string[] = [];
+
+    try {
+      const { data, error } = await Users.read('*');
+
+      if (User.checkError(error, errors).length > 0) throw new Error();
+
+      return res.json({
+        data,
+      });
+    } catch (error) {
+      return res.json({
+        error,
+      });
+    }
   }
 
   async store(req: Request, res: Response) {
@@ -36,6 +50,7 @@ class User {
     } catch (error) {
       return res.json({
         errors,
+        error,
       });
     }
   }
@@ -67,14 +82,17 @@ class User {
   }
 
   private static checkError(error: PostgrestError | null, errors: string[]) {
-    switch (error?.code) {
-      case '23505':
-        if (error.details.includes('name')) errors.push('Nome já existe');
-        if (error.details.includes('email')) errors.push('Email já existe');
-        return errors;
+    if (error) {
+      switch (error?.code) {
+        case '23505':
+          if (error.details.includes('name')) errors.push('Nome já existe');
+          if (error.details.includes('email')) errors.push('Email já existe');
+          return errors;
 
-      default:
-        break;
+        default:
+          errors.push(`${error}`);
+          return errors;
+      }
     }
 
     return [];
