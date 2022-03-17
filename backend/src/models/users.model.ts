@@ -26,10 +26,19 @@ class Users {
     return { data, error };
   }
 
-  async read(query: keyof UserDB | '*') {
+  async read(columns: string, query: Partial<UserDB>) {
     const { data, error }: { data: UserDB[] | null, error: any } = await supabase
       .from('users')
-      .select(query);
+      .select(columns)
+      .match(query);
+
+    return { data, error };
+  }
+
+  async readAll() {
+    const { data, error }: { data: UserDB[] | null, error: any } = await supabase
+      .from('users')
+      .select('*');
 
     return { data, error };
   }
