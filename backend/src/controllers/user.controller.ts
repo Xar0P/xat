@@ -83,19 +83,18 @@ class User {
     }
   }
 
-  // Fazer mais testes
   async update(req: Request, res: Response) {
+    if (User.bodyExists(req)) {
+      return res.status(400).json({
+        errors: ['Corpo da requisição não foi encontrado!'],
+      });
+    }
+
     const {
       name, email, errors,
     } = User.validations(req.body);
 
     const { id } = req.params;
-
-    if (!id) {
-      return res.status(400).json({
-        errors: ['Usuário não existe'],
-      });
-    }
 
     try {
       if (errors.length > 0) throw new Error();
@@ -106,6 +105,39 @@ class User {
       }, { id: Number(id) });
 
       if (User.checkError(error, errors).length > 0) throw new Error();
+
+      if (!data) {
+        return res.status(400).json({
+          errors: ['Usuário não existe'],
+        });
+      }
+
+      return res.json({
+        data,
+      });
+    } catch (error) {
+      return res.status(400).json({
+        errors,
+        error,
+      });
+    }
+  }
+
+  async deleteUser(req: Request, res: Response) {
+    const errors: string[] = [];
+
+    const { id } = req.params;
+
+    try {
+      const { data, error } = await Users.delete({ id: Number(id) });
+
+      if (User.checkError(error, errors).length > 0) throw new Error();
+
+      if (data?.length === 0) {
+        return res.status(400).json({
+          errors: ['Usuário não existe'],
+        });
+      }
 
       return res.json({
         data,
@@ -151,7 +183,7 @@ class User {
   }
 
   private static checkError(error: PostgrestError | null, errors: any[]) {
-    if (error) {
+    if (error && !Array.isArray(error)) {
       switch (error?.code) {
         case '23505':
           if (error.details.includes('name')) errors.push('Nome já existe');
@@ -165,6 +197,10 @@ class User {
     }
 
     return [];
+  }
+
+  private static bodyExists(req: Request) {
+    return Object.keys(req.body).length === 0;
   }
 }
 
