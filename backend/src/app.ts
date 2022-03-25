@@ -3,7 +3,7 @@ import cors from 'cors';
 import http from 'http';
 import { Server, Socket } from 'socket.io';
 
-import { User } from './routes';
+import { Token, User } from './routes';
 
 const allowedOrigin = 'http://localhost:3000';
 
@@ -39,6 +39,7 @@ class App {
       res.send('<h1>Olá</h1>');
     });
     this.app.use('/users/', User);
+    this.app.use('/tokens/', Token);
   }
 
   sockets() {

@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
-import validator from 'validator';
 import bcryptjs from 'bcryptjs';
-import { PostgrestError } from '@supabase/supabase-js';
 
+import { bodyExists, checkErrorInDB, validationUser } from '../utils';
 import { Users } from '../models';
 
 class User {
@@ -12,7 +11,7 @@ class User {
     try {
       const { data, error } = await Users.readAll();
 
-      if (User.checkError(error, errors).length > 0) throw new Error();
+      if (checkErrorInDB(error, errors).length > 0) throw new Error();
 
       return res.json({
         data,
@@ -31,7 +30,7 @@ class User {
       const { id } = req.params;
       const { data, error } = await Users.read('name, email, created_at', { id: Number(id) });
 
-      if (User.checkError(error, errors).length > 0) throw new Error();
+      if (checkErrorInDB(error, errors).length > 0) throw new Error();
 
       return res.json({
         data,
@@ -47,7 +46,7 @@ class User {
   async store(req: Request, res: Response) {
     const {
       name, email, password, errors,
-    } = User.validations(req.body);
+    } = validationUser(req.body);
 
     try {
       if (errors.length > 0) throw new Error();
@@ -63,7 +62,7 @@ class User {
           password: passwordHash,
         });
 
-        if (User.checkError(error, errors).length > 0) throw new Error();
+        if (checkErrorInDB(error, errors).length > 0) throw new Error();
 
         return res.json({
           data,
@@ -84,7 +83,7 @@ class User {
   }
 
   async update(req: Request, res: Response) {
-    if (User.bodyExists(req)) {
+    if (bodyExists(req)) {
       return res.status(400).json({
         errors: ['Corpo da requisição não foi encontrado!'],
       });
@@ -92,7 +91,7 @@ class User {
 
     const {
       name, email, errors,
-    } = User.validations(req.body);
+    } = validationUser(req.body);
 
     const { id } = req.params;
 
@@ -104,7 +103,7 @@ class User {
         email,
       }, { id: Number(id) });
 
-      if (User.checkError(error, errors).length > 0) throw new Error();
+      if (checkErrorInDB(error, errors).length > 0) throw new Error();
 
       if (!data) {
         return res.status(400).json({
@@ -131,7 +130,7 @@ class User {
     try {
       const { data, error } = await Users.delete({ id: Number(id) });
 
-      if (User.checkError(error, errors).length > 0) throw new Error();
+      if (checkErrorInDB(error, errors).length > 0) throw new Error();
 
       if (data?.length === 0) {
         return res.status(400).json({
@@ -148,59 +147,6 @@ class User {
         error,
       });
     }
-  }
-
-  private static validations({ name, email, password }: {
-    name?: string, email?: string, password?: string
-  }) {
-    const errors: string[] = [];
-
-    if (name) {
-      if (!validator.isLength(name, { min: 5, max: 60 })) {
-        errors.push('Nome deve ter entre 5 e 60 caracteres!');
-      }
-    }
-
-    if (email) {
-      if (!validator.isEmail(email)) {
-        errors.push('Email inválido!');
-      }
-
-      if (!validator.isLength(email, { min: undefined, max: 254 })) {
-        errors.push('Email está grande demais não acha?');
-      }
-    }
-
-    if (password) {
-      if (!validator.isLength(password, { min: 6, max: undefined })) {
-        errors.push('Senha deve ter no mínimo 6 caracteres!');
-      }
-    }
-
-    return {
-      name, email, password, errors,
-    };
-  }
-
-  private static checkError(error: PostgrestError | null, errors: any[]) {
-    if (error && !Array.isArray(error)) {
-      switch (error?.code) {
-        case '23505':
-          if (error.details.includes('name')) errors.push('Nome já existe');
-          if (error.details.includes('email')) errors.push('Email já existe');
-          return errors;
-
-        default:
-          errors.push(error);
-          return errors;
-      }
-    }
-
-    return [];
-  }
-
-  private static bodyExists(req: Request) {
-    return Object.keys(req.body).length === 0;
   }
 }
 
