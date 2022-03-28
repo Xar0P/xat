@@ -29,7 +29,10 @@ const Register: React.FC = () => {
       navigate('/login/');
       return toast.success('Conta criada com sucesso!');
     } catch (err: any) {
-      return err.data.errors.forEach((error: string) => toast.error(error));
+      if (err?.data) {
+        return err.data.errors.forEach((error: string) => toast.error(error));
+      }
+      return toast.error('Erro interno');
     }
   };
 
