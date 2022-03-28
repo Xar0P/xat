@@ -7,12 +7,21 @@ const TextField: React.FC<
     placeholder: string,
     value: string,
     onChange: any,
-    type: 'text' | 'password'
+    type: 'text' | 'password' | 'email',
+    name: string,
+    required?: boolean
   }
   > = ({
-    placeholder, value, onChange, type,
+    placeholder, value, onChange, type, name, required,
   }) => (
-    <Input type={type} placeholder={placeholder} value={value} onChange={onChange} />
+    <Input
+      name={name}
+      type={type}
+      placeholder={placeholder}
+      value={value}
+      onChange={onChange}
+      required={required}
+    />
   );
 
 export default TextField;

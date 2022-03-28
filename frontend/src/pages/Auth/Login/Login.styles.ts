@@ -28,7 +28,7 @@ export const Container = styled.div`
   }
 `;
 
-export const WrapperForm = styled.div`
+export const WrapperForm = styled.form`
   ${CenterWithFlex}
   flex-direction: column;
 

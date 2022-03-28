@@ -1,8 +1,15 @@
+/* eslint-disable no-redeclare */
+/* eslint-disable no-import-assign */
 import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
+import { BrowserRouter } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
 
+import Routes from './routes';
 import GlobalStyles from './assets/styles/GlobalStyles';
-import { Auth } from './pages/index';
+import { store, persistor } from './store/modules/store';
 
 function App() {
   // useEffect(() => {
@@ -12,10 +19,15 @@ function App() {
   // }, []);
 
   return (
-    <>
-      <Auth />
-      <GlobalStyles />
-    </>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <BrowserRouter>
+          <Routes />
+          <GlobalStyles />
+          <ToastContainer />
+        </BrowserRouter>
+      </PersistGate>
+    </Provider>
   );
 }
 
