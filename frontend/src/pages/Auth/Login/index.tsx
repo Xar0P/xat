@@ -1,23 +1,47 @@
-import React, { ChangeEvent, useState, useEffect } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 
-import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+
 import { Container, WrapperForm } from './Login.styles';
 import { TextField, CheckBox, Button } from '../../../components/forms';
+import { validationUser } from '../../../services/utils/Validations';
+import { useLoginUserMutation } from '../../../services/api/Auth';
+import { addToken } from '../../../store/modules/Auth/actions';
 
 const Login: React.FC = () => {
-  const isClicked = useSelector((state: any) => state.testReducer.isClicked);
+  const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loginUser] = useLoginUserMutation();
 
-  useEffect(() => {
-    console.log(isClicked);
-  }, [isClicked]);
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const errors = validationUser({ email, password });
+
+    if (errors.length > 0) {
+      return errors.forEach((error) => toast.error(error));
+    }
+
+    try {
+      const data = await loginUser({ email, password }).unwrap();
+      dispatch(addToken(data.token));
+
+      // navigate('/login/');
+      return toast.success('Logado com sucesso!');
+    } catch (err: any) {
+      if (err?.data) {
+        return err.data.errors.forEach((error: string) => toast.error(error));
+      }
+      return toast.error('Erro interno');
+    }
+  };
 
   return (
     <Container>
-      <h1>Sign in</h1>
-      <p>Sign in and enter to the best messenger app!</p>
-      <WrapperForm>
+      <h1>Login</h1>
+      <p>Entre no melhor app de mensagens!</p>
+      <WrapperForm onSubmit={handleSubmit}>
         <TextField
           name="email"
           type="email"
@@ -28,19 +52,18 @@ const Login: React.FC = () => {
         <TextField
           name="password"
           type="password"
-          placeholder="Password"
+          placeholder="Senha"
           value={password}
           onChange={(e: ChangeEvent<{ value: string }>) => setPassword(e.target.value)}
         />
 
         <div>
-          <CheckBox content="Remember me" />
-          <a href="#1">Forgot password?</a>
+          <CheckBox content="Lembrar" />
+          <a href="#1">Esqueceu a senha?</a>
         </div>
 
         <Button text="Login" color="#20DF7F" />
       </WrapperForm>
-      {isClicked ? 'Sim' : 'Não'}
     </Container>
   );
 };

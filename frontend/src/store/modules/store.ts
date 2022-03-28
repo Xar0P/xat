@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
-import testReducer from './example/reducer';
+import userReducer from './Auth/reducer';
 import { authApi } from '../../services/api/Auth';
 
 const persistConfig = {
@@ -10,11 +10,11 @@ const persistConfig = {
   storage,
 };
 
-const persistedReducer = persistReducer(persistConfig, testReducer);
+const persistedReducer = persistReducer(persistConfig, userReducer);
 
 const store = configureStore({
   reducer: {
-    testReducer: persistedReducer,
+    userReducer: persistedReducer,
     [authApi.reducerPath]: authApi.reducer,
   },
 });
