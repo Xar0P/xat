@@ -1,7 +1,7 @@
-import React, { ChangeEvent, useState } from 'react';
-
-import { useDispatch } from 'react-redux';
+import React, { ChangeEvent, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import { Container, WrapperForm } from './Login.styles';
 import { TextField, CheckBox, Button } from '../../../components/forms';
@@ -10,10 +10,16 @@ import { useLoginUserMutation } from '../../../services/api/Auth';
 import { addToken } from '../../../store/modules/Auth/actions';
 
 const Login: React.FC = () => {
+  const navigate = useNavigate();
+  const location: any = useLocation();
   const dispatch = useDispatch();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginUser] = useLoginUserMutation();
+
+  const token = useSelector((state: any) => state.userReducer.token);
+  const prevPath = location?.state ? location.state.prevPath : '/';
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -27,7 +33,7 @@ const Login: React.FC = () => {
       const data = await loginUser({ email, password }).unwrap();
       dispatch(addToken(data.token));
 
-      // navigate('/login/');
+      navigate(prevPath);
       return toast.success('Logado com sucesso!');
     } catch (err: any) {
       if (err?.data) {
@@ -36,6 +42,12 @@ const Login: React.FC = () => {
       return toast.error('Erro interno');
     }
   };
+
+  useEffect(() => {
+    if (token) {
+      navigate(prevPath);
+    }
+  }, [token, navigate, prevPath]);
 
   return (
     <Container>
