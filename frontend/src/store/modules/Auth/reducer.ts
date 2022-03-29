@@ -1,20 +1,27 @@
 /* eslint-disable no-param-reassign */
-import { createReducer } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { addToken, removeToken } from './actions';
+interface UserState {
+  token: string,
+}
 
 const initialState = {
   token: '',
-};
+} as UserState;
 
-const userReducer = createReducer(initialState, (builder) => {
-  builder
-    .addCase(addToken, (state, action) => {
+const userSlice = createSlice({
+  name: 'user',
+  initialState,
+  reducers: {
+    addToken(state, action: PayloadAction<string>) {
       state.token = action.payload;
-    })
-    .addCase(removeToken, (state) => {
+    },
+    removeToken(state) {
       state.token = '';
-    });
+    },
+  },
 });
 
-export default userReducer;
+export const selectToken = (state: State) => state.reducer.user.token;
+export const { addToken, removeToken } = userSlice.actions;
+export default userSlice.reducer;

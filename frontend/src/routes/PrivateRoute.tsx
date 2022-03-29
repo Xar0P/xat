@@ -2,8 +2,10 @@ import React from 'react';
 import { Outlet, Navigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
+import { selectToken } from '../store/modules/Auth/reducer';
+
 const PrivateRoute: React.FC = () => {
-  const isLoggedIn = useSelector<any>((state) => state.userReducer.token);
+  const isLoggedIn = useSelector(selectToken);
   const location = useLocation();
 
   if (!isLoggedIn) {

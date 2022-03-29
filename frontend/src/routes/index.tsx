@@ -7,7 +7,7 @@ import PrivateRoute from './PrivateRoute';
 const Routes: React.FC = () => (
   <Switch>
     <Route path="/" element={<PrivateRoute />}>
-      <Route path="/" element={<Login />} />
+      <Route path="/" element={<p>Opa</p>} />
     </Route>
     <Route path="/login" element={<Login />} />
     <Route path="/register" element={<Register />} />

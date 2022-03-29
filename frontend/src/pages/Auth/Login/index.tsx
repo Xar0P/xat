@@ -7,7 +7,7 @@ import { Container, WrapperForm } from './Login.styles';
 import { TextField, CheckBox, Button } from '../../../components/forms';
 import { validationUser } from '../../../services/utils/Validations';
 import { useLoginUserMutation } from '../../../services/api/Auth';
-import { addToken } from '../../../store/modules/Auth/actions';
+import { selectToken, addToken } from '../../../store/modules/Auth/reducer';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [loginUser] = useLoginUserMutation();
 
-  const token = useSelector((state: any) => state.userReducer.token);
+  const token = useSelector(selectToken);
   const prevPath = location?.state ? location.state.prevPath : '/';
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

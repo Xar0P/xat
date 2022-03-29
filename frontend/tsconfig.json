@@ -22,5 +22,5 @@
   },
   "include": [
     "src"
-  ]
+, "src/store/modules/Auth/.d.ts", "src/store/modules/.d.ts"  ]
 }
