@@ -40,11 +40,17 @@ class Token {
         }
 
         const { id } = user[0];
-        const token = jwt.sign({ id, email }, <string>process.env.TOKEN_SECRET, {
+        const { name } = user[0];
+        const token = jwt.sign({ id, email, name }, <string>process.env.TOKEN_SECRET, {
           expiresIn: <string>process.env.TOKEN_EXPIRATION,
         });
 
-        return res.json({ token, user: { id, nome: user[0].name, email } });
+        return res.json({
+          token,
+          user: {
+            id, email, name,
+          },
+        });
       }
 
       return res.json({

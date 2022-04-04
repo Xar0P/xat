@@ -1,0 +1,1 @@
+export { decodeJWT } from './DecodeJWT';

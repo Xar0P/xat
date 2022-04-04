@@ -23,6 +23,9 @@ const reducer = {
 
 const store = configureStore({
   reducer,
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+    serializableCheck: false,
+  }),
 });
 const persistor = persistStore(store);
 

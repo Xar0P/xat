@@ -45,7 +45,7 @@ class App {
   sockets() {
     this.io.on('connection', (socket: Socket) => {
       // eslint-disable-next-line no-console
-      console.log(`a user connected in ${socket.id}`);
+      console.log(`a user connected in ${socket.handshake.auth.username}`);
     });
   }
 }
