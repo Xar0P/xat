@@ -46,6 +46,16 @@ class App {
     this.io.on('connection', (socket: Socket) => {
       // eslint-disable-next-line no-console
       console.log(`a user connected in ${socket.handshake.auth.username}`);
+
+      socket.on('disconnect', () => {
+        // eslint-disable-next-line no-console
+        console.log(`the user ${socket.handshake.auth.username} has been disconnected`);
+      });
+
+      socket.on('chat message', (msg) => {
+        console.log(msg);
+        this.io.emit('chat message', msg);
+      });
     });
   }
 }
