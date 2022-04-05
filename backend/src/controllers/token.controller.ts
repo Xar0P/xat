@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import * as dotenv from 'dotenv';
 
 import {
   passwordIsValid,
@@ -8,7 +9,7 @@ import {
 } from '../utils';
 import { Users } from '../models';
 
-require('dotenv').config();
+dotenv.config();
 
 // Fazer mais testes
 class Token {
