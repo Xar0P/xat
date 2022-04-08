@@ -21,6 +21,20 @@ const ContactBar: React.FC = () => (
     </Top>
     <ChatWrapper>
       <ChatPreview />
+      <ChatPreview />
+      <ChatPreview isSelected />
+      <ChatPreview />
+      <ChatPreview />
+      <ChatPreview />
+      <ChatPreview />
+      <ChatPreview />
+      <ChatPreview />
+      <ChatPreview />
+      <ChatPreview />
+      <ChatPreview />
+      <ChatPreview />
+      <ChatPreview />
+      <ChatPreview />
     </ChatWrapper>
   </Container>
 );

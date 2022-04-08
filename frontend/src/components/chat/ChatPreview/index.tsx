@@ -8,8 +8,8 @@ import {
   DateLastMessage,
 } from './ChatPreview.styles';
 
-const ChatPreview: React.FC = () => (
-  <Chat>
+const ChatPreview: React.FC<{ isSelected?: boolean }> = ({ isSelected }) => (
+  <Chat isSelected={isSelected}>
     <div>
       <Avatar />
       <div>

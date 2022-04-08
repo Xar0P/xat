@@ -5,7 +5,7 @@ import MenuButtonSVG from '../../../assets/svgs/Shape.svg';
 export const Container = styled.aside`
   width: 25%;
   height: 100%;
-  padding: 0 16px;
+
 
   display: flex;
   flex-direction: column;
@@ -20,6 +20,7 @@ export const Top = styled.div`
   justify-content: center;
 
   margin-bottom: 16px;
+  padding: 0 16px;
 `;
 
 export const Title = styled.div`
@@ -60,4 +61,11 @@ export const Search = styled.input`
   background-color: rgba(255, 255, 255, 0.0605);
 `;
 
-export const ChatWrapper = styled.div``;
+export const ChatWrapper = styled.div`
+  overflow-y: scroll;
+  padding: 0 6px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;

@@ -1,6 +1,29 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
-export const Chat = styled.div`
+const cssSelected = css`
+  background-color: rgba(255, 255, 255, 0.0605);;
+  border-radius: 4px;
+
+  > div:nth-of-type(1)::before {
+    content: '';
+
+    position: absolute;
+    left: -10px;
+
+    width: 3px;
+    height: 50%;
+    background-color: #60CDFF;
+
+    margin-right: 6px;
+    border-radius: 5px;
+  }
+`;
+
+export const Chat = styled.div<{ isSelected: boolean | undefined }>`
+  ${(props) => (props.isSelected
+    ? cssSelected
+    : '')
+}
   cursor: pointer;
 
   width: 100%;
@@ -10,9 +33,13 @@ export const Chat = styled.div`
   justify-content: space-between;
   align-items: center;
 
-  padding: 10px 0;
+  padding: 10px;
 
   > div:nth-of-type(1) {
+    position: relative;
+
+    justify-self: flex-start;
+
     height: 100%;
     display: flex;
     align-items: center;
