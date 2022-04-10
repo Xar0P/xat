@@ -7,7 +7,7 @@ import { selectToken } from '../../store/modules/Auth/reducer';
 import { decodeJWT } from '../../services/utils/Decode';
 import { TextField, Button } from '../../components/forms';
 import { Message } from '../../services/chat';
-import { ContactBar } from '../../components/chat';
+import { ContactBar, Content } from '../../components/chat';
 
 interface User {
   id: number,
@@ -48,6 +48,7 @@ const Home: React.FC = () => {
   return (
     <Container>
       <ContactBar />
+      <Content />
       {/* {user.name}
       <form onSubmit={handleSubmit}>
         <TextField

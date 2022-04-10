@@ -11,7 +11,7 @@ export const Container = styled.aside`
   flex-direction: column;
   justify-content: flex-start;
 
-  background-color: #202020;
+
 `;
 
 export const Top = styled.div`
