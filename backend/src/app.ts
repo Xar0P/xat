@@ -46,6 +46,21 @@ class App {
     this.io.on('connection', (socket: Socket) => {
       // eslint-disable-next-line no-console
       console.log(`the user ${socket.handshake.auth.username} has been connected`);
+      const users = [];
+      // eslint-disable-next-line no-restricted-syntax
+      for (const [id, socket] of this.io.of('/').sockets) {
+        users.push({
+          userID: id,
+          username: socket.handshake.auth.username,
+        });
+      }
+
+      socket.emit('users', users);
+
+      socket.broadcast.emit('user connected', {
+        userID: socket.id,
+        username: socket.handshake.auth.username,
+      });
 
       socket.on('disconnect', () => {
         // eslint-disable-next-line no-console

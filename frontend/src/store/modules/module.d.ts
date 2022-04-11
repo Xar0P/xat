@@ -4,6 +4,9 @@ interface State {
   reducer: {
     user: {
       token: string,
+    },
+    chat: {
+      socket: Socket
     }
   }
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, ChangeEvent, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { Container } from './Home.styles';
 import { selectToken } from '../../store/modules/Auth/reducer';
@@ -8,6 +8,7 @@ import { decodeJWT } from '../../services/utils/Decode';
 import { TextField, Button } from '../../components/forms';
 import { Message } from '../../services/chat';
 import { ContactBar, Content } from '../../components/chat';
+import { newSocket } from '../../services/chat/socket';
 
 interface User {
   id: number,
@@ -16,6 +17,7 @@ interface User {
 }
 
 const Home: React.FC = () => {
+  const dispatch = useDispatch();
   const token = useSelector(selectToken);
   const user = decodeJWT<User>(token);
   const [message, setMessage] = useState('');
@@ -23,10 +25,7 @@ const Home: React.FC = () => {
   const [socket, setSocket] = useState<Socket>();
 
   useEffect(() => {
-    const socket = io('http://localhost:3333', { autoConnect: false });
-    socket.auth = { username: user.name };
-    socket.connect();
-    setSocket(socket);
+    setSocket(newSocket(user));
   }, []);
 
   useEffect(() => {
@@ -47,7 +46,7 @@ const Home: React.FC = () => {
 
   return (
     <Container>
-      <ContactBar />
+      <ContactBar socket={socket} />
       <Content />
       {/* {user.name}
       <form onSubmit={handleSubmit}>
