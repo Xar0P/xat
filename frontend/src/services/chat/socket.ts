@@ -11,5 +11,8 @@ export const newSocket = (user: User) => {
   socket.auth = { username: user.name };
   socket.connect();
 
+  socket.emit('userdata', {
+    name: user.name,
+  });
   return socket;
 };

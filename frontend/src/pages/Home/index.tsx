@@ -10,12 +10,6 @@ import { Message } from '../../services/chat';
 import { ContactBar, Content } from '../../components/chat';
 import { newSocket } from '../../services/chat/socket';
 
-interface User {
-  id: number,
-  email: string,
-  name: string,
-}
-
 const Home: React.FC = () => {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
@@ -46,8 +40,8 @@ const Home: React.FC = () => {
 
   return (
     <Container>
-      <ContactBar socket={socket} />
-      <Content />
+      <ContactBar user={user} socket={socket} />
+      <Content user={user} socket={socket} />
       {/* {user.name}
       <form onSubmit={handleSubmit}>
         <TextField

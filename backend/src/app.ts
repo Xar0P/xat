@@ -1,9 +1,16 @@
+/* eslint-disable no-param-reassign */
 import express from 'express';
 import cors from 'cors';
 import http from 'http';
 import { Server, Socket } from 'socket.io';
 
 import { Token, User } from './routes';
+
+interface UserSocket {
+  id: number,
+  email: string,
+  name: string,
+}
 
 const allowedOrigin = 'http://localhost:3000';
 
@@ -44,8 +51,10 @@ class App {
 
   sockets() {
     this.io.on('connection', (socket: Socket) => {
-      // eslint-disable-next-line no-console
-      console.log(`the user ${socket.handshake.auth.username} has been connected`);
+      socket.on('userdata', (data: UserSocket) => {
+        socket.data.username = data.name;
+      });
+
       const users = [];
       // eslint-disable-next-line no-restricted-syntax
       for (const [id, socket] of this.io.of('/').sockets) {
@@ -60,6 +69,20 @@ class App {
       socket.broadcast.emit('user connected', {
         userID: socket.id,
         username: socket.handshake.auth.username,
+      });
+
+      socket.on('private message', async ({ msg, to }) => {
+        console.log('OI');
+        const currentSocket = await this.io.in(to).fetchSockets();
+        socket.to(to).emit('new private message', {
+          msg,
+          from: socket.id,
+        });
+
+        // socket.emit('private message', {
+        //   data: currentSocket[0]?.data,
+        //   msg,
+        // });
       });
 
       socket.on('disconnect', () => {

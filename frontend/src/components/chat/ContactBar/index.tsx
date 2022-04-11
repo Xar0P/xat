@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Socket } from 'socket.io-client';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { selectToken } from '../../../store/modules/Auth/reducer';
 import { selectUserSelected, selectedUser } from '../../../store/modules/Chat/reducer';
-
 import { ChatPreview } from '..';
 import {
   Container,
@@ -14,12 +12,12 @@ import {
   Search,
   ChatWrapper,
 } from './ContactBar.styles';
-import { decodeJWT } from '../../../services/utils/Decode';
 
-const ContactBar: React.FC<{ socket: Socket | undefined }> = ({ socket }) => {
+const ContactBar: React.FC<{
+  socket: Socket | undefined,
+  user: User
+}> = ({ socket, user: currentUser }) => {
   const dispatch = useDispatch();
-  const token = useSelector(selectToken);
-  const currentUser = decodeJWT<any>(token);
   const userSelected = useSelector(selectUserSelected);
   // const [message, setMessage] = useState('');
   // const [messages, setMessages] = useState<Array<Message>>([]);
