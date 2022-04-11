@@ -1,29 +1,24 @@
-// /* eslint-disable no-param-reassign */
-// import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-// import { Socket } from 'socket.io-client';
+/* eslint-disable no-param-reassign */
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-// interface ChatState {
-//   socket: Socket | null,
-// }
+interface ChatState {
+  selectedUser: string | null,
+}
 
-// const initialState = {
-//   socket: null,
-// } as ChatState;
+const initialState = {
+  selectedUser: null,
+} as ChatState;
 
-// const chatSlice = createSlice({
-//   name: 'chat',
-//   initialState,
-//   reducers: {
-//     newSocket(state, action: PayloadAction<any>) {
-//       console.log(action);
-//       state.socket = action.payload;
-//     },
-//     removeSocket(state) {
-//       state.socket = null;
-//     },
-//   },
-// });
+const chatSlice = createSlice({
+  name: 'chat',
+  initialState,
+  reducers: {
+    selectedUser(state, action: PayloadAction<string>) {
+      state.selectedUser = action.payload;
+    },
+  },
+});
 
-// export const selectSocket = (state: State) => state.reducer.chat.socket;
-// export const { newSocket, removeSocket } = chatSlice.actions;
-// export default chatSlice.reducer;
+export const selectUserSelected = (state: State) => state.reducer.chat.selectedUser;
+export const { selectedUser } = chatSlice.actions;
+export default chatSlice.reducer;

@@ -6,7 +6,7 @@ interface State {
       token: string,
     },
     chat: {
-      socket: Socket
+      selectedUser: string
     }
   }
 }

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-
 import { Socket } from 'socket.io-client';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+
 import { selectToken } from '../../../store/modules/Auth/reducer';
+import { selectUserSelected, selectedUser } from '../../../store/modules/Chat/reducer';
 
 import { ChatPreview } from '..';
 import {
@@ -16,8 +17,10 @@ import {
 import { decodeJWT } from '../../../services/utils/Decode';
 
 const ContactBar: React.FC<{ socket: Socket | undefined }> = ({ socket }) => {
+  const dispatch = useDispatch();
   const token = useSelector(selectToken);
   const currentUser = decodeJWT<any>(token);
+  const userSelected = useSelector(selectUserSelected);
   // const [message, setMessage] = useState('');
   // const [messages, setMessages] = useState<Array<Message>>([]);
   const [users, setUsers] = useState<any[]>([]);
@@ -29,7 +32,6 @@ const ContactBar: React.FC<{ socket: Socket | undefined }> = ({ socket }) => {
           if (user.username === currentUser.name) return false;
           return user;
         });
-        console.log(users);
         setUsers((prevUsers: any) => [...prevUsers, ...users]);
       });
 
@@ -38,6 +40,10 @@ const ContactBar: React.FC<{ socket: Socket | undefined }> = ({ socket }) => {
       });
     }
   }, [socket]);
+
+  const handleSelect = (e: any, id: string) => {
+    dispatch(selectedUser(id));
+  };
 
   return (
     <Container>
@@ -52,7 +58,12 @@ const ContactBar: React.FC<{ socket: Socket | undefined }> = ({ socket }) => {
         {users.map((user) => {
           if (user) {
             return (
-              <ChatPreview key={user.userID} name={user.username} />
+              <ChatPreview
+                key={user.userID}
+                name={user.username}
+                handleSelect={(e: any) => handleSelect(e, user.userID)}
+                isSelected={user.userID === userSelected}
+              />
             );
           }
           return false;

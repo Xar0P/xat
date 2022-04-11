@@ -3,12 +3,12 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
 import userReducer from './Auth/reducer';
-// import chatReducer from './Chat/reducer';
+import chatReducer from './Chat/reducer';
 import { authApi } from '../../services/api/Auth';
 
 const reducersToPersist = combineReducers({
   user: userReducer,
-  // chat: chatReducer,
+  chat: chatReducer,
 });
 
 const persistConfig = {

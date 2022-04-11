@@ -9,14 +9,15 @@ import {
 } from './ChatPreview.styles';
 
 const ChatPreview: React.FC<{
-  isSelected?: boolean,
+  isSelected: boolean,
   name: string,
   previewMessage?: string,
-  dateLastMessage?: string
+  dateLastMessage?: string,
+  handleSelect: any
 }> = ({
-  isSelected, name, previewMessage, dateLastMessage,
+  isSelected, name, previewMessage, dateLastMessage, handleSelect,
 }) => (
-  <Chat isSelected={isSelected}>
+  <Chat onClick={handleSelect} isSelected={isSelected}>
     <div>
       <Avatar />
       <div>
