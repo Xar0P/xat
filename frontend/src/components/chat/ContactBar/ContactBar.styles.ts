@@ -51,6 +51,11 @@ export const MenuButton = styled.div`
 `;
 
 export const Search = styled.input`
+  color: #fff;
+  &::placeholder {
+    color: #8A8A8A;
+  }
+
   width: 100%;
   height: 32px;
   padding-left: 12px;
