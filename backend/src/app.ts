@@ -39,6 +39,29 @@ class App {
     this.app.use(cors({ origin: allowedOrigin }));
     this.app.use(express.urlencoded({ extended: false }));
     this.app.use(express.json());
+    // Armazenar sessao no localstorage e verificar se ja existe e fazer validaçãos
+    // this.io.use((socket, next) => {
+    //   const { sessionID } = socket.handshake.auth;
+    //   if (sessionID) {
+    //     // find existing session
+    //     const session = sessionStore.findSession(sessionID);
+    //     if (session) {
+    //       socket.sessionID = sessionID;
+    //       socket.userID = session.userID;
+    //       socket.username = session.username;
+    //       return next();
+    //     }
+    //   }
+    //   const { username } = socket.handshake.auth;
+    //   if (!username) {
+    //     return next(new Error('invalid username'));
+    //   }
+    //   // create new session
+    //   socket.sessionID = randomId();
+    //   socket.userID = randomId();
+    //   socket.username = username;
+    //   next();
+    // });
   }
 
   routes() {
@@ -54,6 +77,9 @@ class App {
       socket.on('userdata', (data: UserSocket) => {
         socket.data.username = data.name;
       });
+
+      const { sessionID } = socket.handshake.auth;
+      console.log(sessionID);
 
       const users = [];
       // eslint-disable-next-line no-restricted-syntax
@@ -79,10 +105,10 @@ class App {
           from: socket.id,
         });
 
-        // socket.emit('private message', {
-        //   data: currentSocket[0]?.data,
-        //   msg,
-        // });
+        socket.emit('private message', {
+          data: currentSocket[0]?.data,
+          msg,
+        });
       });
 
       socket.on('disconnect', () => {
