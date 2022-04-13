@@ -23,6 +23,8 @@ const ContactBar: React.FC<{
   // const [messages, setMessages] = useState<Array<Message>>([]);
   const [users, setUsers] = useState<any[]>([]);
 
+  useEffect(() => { dispatch(selectedUser('')); }, []);
+
   useEffect(() => {
     if (socket) {
       socket.on('users', (rootUsers: any) => {
@@ -39,7 +41,7 @@ const ContactBar: React.FC<{
     }
   }, [socket]);
 
-  const handleSelect = (e: any, id: string) => {
+  const handleClick = (e: any, id: string) => {
     dispatch(selectedUser(id));
   };
 
@@ -59,7 +61,7 @@ const ContactBar: React.FC<{
               <ChatPreview
                 key={user.userID}
                 name={user.username}
-                handleSelect={(e: any) => handleSelect(e, user.userID)}
+                handleClick={(e: any) => handleClick(e, user.userID)}
                 isSelected={user.userID === userSelected}
               />
             );

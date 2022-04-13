@@ -97,9 +97,11 @@ class App {
         username: socket.handshake.auth.username,
       });
 
+      // AXIOS NO PROPRIO SERVER PRA ARMAZENAR MENSAGEM
       socket.on('private message', async ({ msg, to }) => {
         console.log('OI');
         const currentSocket = await this.io.in(to).fetchSockets();
+
         socket.to(to).emit('new private message', {
           msg,
           from: socket.id,

@@ -13,11 +13,11 @@ const ChatPreview: React.FC<{
   name: string,
   previewMessage?: string,
   dateLastMessage?: string,
-  handleSelect: any
+  handleClick: any
 }> = ({
-  isSelected, name, previewMessage, dateLastMessage, handleSelect,
+  isSelected, name, previewMessage, dateLastMessage, handleClick,
 }) => (
-  <Chat onClick={handleSelect} isSelected={isSelected}>
+  <Chat onClick={handleClick} isSelected={isSelected}>
     <div>
       <Avatar />
       <div>
