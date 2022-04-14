@@ -1,20 +1,23 @@
+import { Request, Response } from 'express';
+
 import { Messages } from '../models';
+import { bodyExists, checkErrorInDB } from '../utils';
 
 class Message {
-  async store({
-    id,
-    message,
-    sender,
-    receiver,
-    date,
-  }: {
-    id: string,
-    message: string,
-    sender: number,
-    receiver: number,
-    date: number
-  }) {
+  async store(req: Request, res: Response) {
+    const errors: string[] = [];
+
     try {
+      if (bodyExists(req)) {
+        return res.status(400).json({
+          errors: ['Corpo da requisição não foi encontrado!'],
+        });
+      }
+
+      const {
+        id, message, sender, receiver, date,
+      } = req.body;
+
       const { data, error } = await Messages.create({
         id,
         message,
@@ -22,8 +25,17 @@ class Message {
         receiver,
         date,
       });
+
+      if (checkErrorInDB(error, errors).length > 0) throw new Error();
+
+      return res.json({
+        data,
+      });
     } catch (error) {
-      console.log(error);
+      return res.status(400).json({
+        errors,
+        error,
+      });
     }
   }
 }

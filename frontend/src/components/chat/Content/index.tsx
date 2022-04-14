@@ -1,4 +1,6 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, {
+  ChangeEvent, useContext, useEffect, useState,
+} from 'react';
 import { useSelector } from 'react-redux';
 import { io, Socket } from 'socket.io-client';
 
@@ -25,8 +27,10 @@ import {
   MessageDate,
   WrapperInput,
 } from './Content.styles';
+import { SocketContext } from '../../../context/socket';
 
-const Content: React.FC<{ socket: Socket | undefined, user: User }> = ({ socket, user }) => {
+const Content: React.FC<{ user: User }> = ({ user }) => {
+  const socket = useContext(SocketContext);
   const userSelected = useSelector(selectUserSelected);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Array<Message>>([]);
@@ -53,19 +57,17 @@ const Content: React.FC<{ socket: Socket | undefined, user: User }> = ({ socket,
   };
 
   useEffect(() => {
-    if (socket) {
-      // socket.emit('private messages', userSelected);
+    // socket.emit('private messages', userSelected);
 
-      socket.on('private message', ({ data, msg: newMessage }) => {
-        console.log('OIII');
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
-        setUsername(data.username);
-      });
+    socket.on('private message', ({ data, msg: newMessage }: any) => {
+      console.log('OIII');
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      setUsername(data.userName);
+    });
 
-      socket.on('new private message', ({ msg: newMessage, from }) => {
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
-      });
-    }
+    socket.on('new private message', ({ msg: newMessage, from }: any) => {
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+    });
   }, [socket, userSelected, setMessages, setUsername]);
 
   useEffect(() => console.log(messages), [messages]);
@@ -99,7 +101,7 @@ const Content: React.FC<{ socket: Socket | undefined, user: User }> = ({ socket,
               {messages.map((message) => (
                 user.name === message.sender
                   ? (
-                    <MessageSent>
+                    <MessageSent key={message.id}>
                       <MessageContent>
                         {message.message}
                       </MessageContent>
@@ -107,7 +109,7 @@ const Content: React.FC<{ socket: Socket | undefined, user: User }> = ({ socket,
                     </MessageSent>
                   )
                   : (
-                    <MessageReceived>
+                    <MessageReceived key={message.id}>
                       <MessageContent>
                         {message.message}
                       </MessageContent>

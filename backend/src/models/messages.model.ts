@@ -1,12 +1,6 @@
 import supabase from '../config/supabase';
 
-export interface Message {
-  id: string,
-  message: string,
-  sender: number,
-  receiver: number,
-  date: number
-}
+import { Message } from '../module';
 
 class Messages {
   async create(message: Message) {

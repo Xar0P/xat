@@ -3,14 +3,10 @@ import express from 'express';
 import cors from 'cors';
 import http from 'http';
 import { Server, Socket } from 'socket.io';
+import axios from 'axios';
 
-import { Token, User } from './routes';
-
-interface UserSocket {
-  id: number,
-  email: string,
-  name: string,
-}
+import { Token, User, Message as MessageRoutes } from './routes';
+import { Message, UserSocket } from './module';
 
 const allowedOrigin = 'http://localhost:3000';
 
@@ -39,68 +35,61 @@ class App {
     this.app.use(cors({ origin: allowedOrigin }));
     this.app.use(express.urlencoded({ extended: false }));
     this.app.use(express.json());
-    // Armazenar sessao no localstorage e verificar se ja existe e fazer validaçãos
-    // this.io.use((socket, next) => {
-    //   const { sessionID } = socket.handshake.auth;
-    //   if (sessionID) {
-    //     // find existing session
-    //     const session = sessionStore.findSession(sessionID);
-    //     if (session) {
-    //       socket.sessionID = sessionID;
-    //       socket.userID = session.userID;
-    //       socket.username = session.username;
-    //       return next();
-    //     }
-    //   }
-    //   const { username } = socket.handshake.auth;
-    //   if (!username) {
-    //     return next(new Error('invalid username'));
-    //   }
-    //   // create new session
-    //   socket.sessionID = randomId();
-    //   socket.userID = randomId();
-    //   socket.username = username;
-    //   next();
-    // });
   }
 
   routes() {
-    this.app.get('/', (req: express.Request, res: express.Response) => {
-      res.send('<h1>Olá</h1>');
-    });
     this.app.use('/users/', User);
     this.app.use('/tokens/', Token);
+    this.app.use('/messages/', MessageRoutes);
   }
 
   sockets() {
+    let users: { userID: number; socketID: string; userName: string; }[] = [];
+
     this.io.on('connection', (socket: Socket) => {
-      socket.on('userdata', (data: UserSocket) => {
-        socket.data.username = data.name;
+      console.log('a user connected');
+
+      const addUser = ({
+        userID,
+        socketID,
+        userName,
+      }:
+        {
+           userID: number;
+           socketID: string;
+           userName: string;
+          }) => (
+        !users.some((user) => user.userID === userID)
+          && users.push({ userID, socketID, userName }));
+
+      const removeUser = (socketID: string) => {
+        users = users.filter((user) => user.socketID !== socketID);
+      };
+
+      socket.on('addUser', (data: UserSocket) => {
+        addUser({ userID: data.id, socketID: socket.id, userName: data.name });
+        this.io.emit('getUsers', users);
       });
 
-      const { sessionID } = socket.handshake.auth;
-      console.log(sessionID);
-
-      const users = [];
-      // eslint-disable-next-line no-restricted-syntax
-      for (const [id, socket] of this.io.of('/').sockets) {
-        users.push({
-          userID: id,
-          username: socket.handshake.auth.username,
-        });
-      }
-
-      socket.emit('users', users);
-
-      socket.broadcast.emit('user connected', {
-        userID: socket.id,
-        username: socket.handshake.auth.username,
+      socket.on('disconnect', () => {
+        removeUser(socket.id);
+        this.io.emit('getUsers', users);
       });
 
-      // AXIOS NO PROPRIO SERVER PRA ARMAZENAR MENSAGEM
-      socket.on('private message', async ({ msg, to }) => {
+      socket.on('private message', async ({ msg, to }: {
+        msg: Pick<Message, Exclude<keyof Message, 'receiver'>>,
+        to: string
+      }) => {
         console.log('OI');
         const currentSocket = await this.io.in(to).fetchSockets();
+
+        // axios.post('http://localhost:3333/messages/', {
+        //   id: msg.id,
+        //   message: msg.message,
+        //   sender: msg.sender,
+        //   date: msg.date,
+        //   receiver: to,
+        // });
 
         socket.to(to).emit('new private message', {
           msg,
@@ -111,16 +100,6 @@ class App {
           data: currentSocket[0]?.data,
           msg,
         });
-      });
-
-      socket.on('disconnect', () => {
-        // eslint-disable-next-line no-console
-        console.log(`the user ${socket.handshake.auth.username} has been disconnected`);
-      });
-
-      socket.on('chat message', (msg) => {
-        console.log(msg);
-        this.io.emit('chat message', msg);
       });
     });
   }

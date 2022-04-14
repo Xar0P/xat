@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { Socket } from 'socket.io-client';
+import React, { useContext, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { selectUserSelected, selectedUser } from '../../../store/modules/Chat/reducer';
@@ -12,11 +11,10 @@ import {
   Search,
   ChatWrapper,
 } from './ContactBar.styles';
+import { SocketContext } from '../../../context/socket';
 
-const ContactBar: React.FC<{
-  socket: Socket | undefined,
-  user: User
-}> = ({ socket, user: currentUser }) => {
+const ContactBar: React.FC<{ user: User }> = ({ user: currentUser }) => {
+  const socket = useContext(SocketContext);
   const dispatch = useDispatch();
   const userSelected = useSelector(selectUserSelected);
   // const [message, setMessage] = useState('');
@@ -26,20 +24,25 @@ const ContactBar: React.FC<{
   useEffect(() => { dispatch(selectedUser('')); }, []);
 
   useEffect(() => {
-    if (socket) {
-      socket.on('users', (rootUsers: any) => {
-        const users = rootUsers.map((user: any) => {
-          if (user.username === currentUser.name) return false;
-          return user;
-        });
-        setUsers((prevUsers: any) => [...prevUsers, ...users]);
-      });
+    socket.emit('addUser', {
+      name: currentUser.name,
+      id: currentUser.id,
+    });
+  }, []);
 
-      socket.on('user connected', (user: any) => {
-        setUsers((prevUsers: any) => [...prevUsers, user]);
+  useEffect(() => {
+    socket.on('getUsers', (rootUsers: any) => {
+      const users = rootUsers.map((user: any) => {
+        if (user.userName === currentUser.name) return false;
+        return user;
       });
-    }
+      setUsers(
+        users,
+      );
+    });
   }, [socket]);
+
+  useEffect(() => console.log(users), [socket, setUsers, users, userSelected]);
 
   const handleClick = (e: any, id: string) => {
     dispatch(selectedUser(id));
@@ -59,8 +62,8 @@ const ContactBar: React.FC<{
           if (user) {
             return (
               <ChatPreview
-                key={user.userID}
-                name={user.username}
+                key={user.socketID}
+                name={user.userName}
                 handleClick={(e: any) => handleClick(e, user.userID)}
                 isSelected={user.userID === userSelected}
               />
