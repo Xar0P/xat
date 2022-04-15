@@ -93,6 +93,7 @@ export const MoreIcon = styled.div`${iconCSS}`;
 export const Chat = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
 
   overflow-y: scroll;
 
@@ -110,7 +111,8 @@ const messageCSS = css`
   margin-bottom: 3px;
 
   display: flex;
-  justify-content: space-between;
+  /* justify-content: space-between; */
+  flex-wrap: wrap;
   flex-shrink: 0;
 `;
 
@@ -135,8 +137,8 @@ export const MessageReceived = styled.div`
 export const MessageContent = styled.span`
   color: #fff;
   font-size: 14px;
-  inline-size: 100%;
   overflow-wrap: break-word;
+  overflow: hidden;
 
   margin-right: 8px;
 `;
