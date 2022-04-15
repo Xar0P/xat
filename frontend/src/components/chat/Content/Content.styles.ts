@@ -94,6 +94,8 @@ export const Chat = styled.div`
   display: flex;
   flex-direction: column;
 
+  overflow-y: scroll;
+
   width: 100%;
 
   // Mexer nisso aqui
@@ -133,6 +135,8 @@ export const MessageReceived = styled.div`
 export const MessageContent = styled.span`
   color: #fff;
   font-size: 14px;
+  inline-size: 100%;
+  overflow-wrap: break-word;
 
   margin-right: 8px;
 `;

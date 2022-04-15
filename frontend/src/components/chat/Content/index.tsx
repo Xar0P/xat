@@ -2,6 +2,7 @@ import React, {
   ChangeEvent, useContext, useEffect, useMemo, useState,
 } from 'react';
 import { useSelector } from 'react-redux';
+import moment from 'moment';
 
 import { Message } from '../../../services/chat';
 import { selectUserSelected } from '../../../store/modules/Chat/reducer';
@@ -103,7 +104,7 @@ const Content: React.FC<{ user: User }> = ({ user }) => {
                       <MessageContent>
                         {message.message}
                       </MessageContent>
-                      <MessageDate>{message.date}</MessageDate>
+                      <MessageDate>{moment(message.date).format('LT')}</MessageDate>
                     </MessageSent>
                   )
                   : (
@@ -111,7 +112,7 @@ const Content: React.FC<{ user: User }> = ({ user }) => {
                       <MessageContent>
                         {message.message}
                       </MessageContent>
-                      <MessageDate>{message.date}</MessageDate>
+                      <MessageDate>{moment(message.date).format('LT')}</MessageDate>
                     </MessageReceived>
                   )
               ))}
