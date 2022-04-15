@@ -5,14 +5,14 @@ export default class Message {
 
   public readonly message: string;
 
-  public readonly sender: string;
+  public readonly senderID: number;
 
   public readonly date: number;
 
-  constructor({ message, sender }: { message: string, sender: string }) {
+  constructor({ message, senderID }: { message: string, senderID: number }) {
     this.id = uuid();
     this.message = message;
-    this.sender = sender;
+    this.senderID = senderID;
     this.date = new Date().getTime();
   }
 }

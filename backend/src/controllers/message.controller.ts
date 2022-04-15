@@ -15,13 +15,13 @@ class Message {
       }
 
       const {
-        id, message, sender, receiver, date,
+        id, message, senderID, receiver, date,
       } = req.body;
 
       const { data, error } = await Messages.create({
         id,
         message,
-        sender,
+        senderID,
         receiver,
         date,
       });

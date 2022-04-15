@@ -10,7 +10,7 @@ class Messages {
         {
           id: message.id,
           message: message.message,
-          sender: message.sender,
+          sender: message.senderID,
           receiver: message.receiver,
           date: message.date,
         },

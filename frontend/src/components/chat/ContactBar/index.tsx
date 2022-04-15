@@ -36,14 +36,14 @@ const ContactBar: React.FC = () => {
         <Search type="search" placeholder="Pesquisar" />
       </Top>
       <ChatWrapper>
-        {users.map((user: any) => {
+        {users.map((user) => {
           if (user) {
             return (
               <ChatPreview
                 key={user.socketID}
                 name={user.userName}
-                handleClick={(e: any) => handleClick(e, user.userID)}
-                isSelected={user.userID === userSelected}
+                handleClick={(e: any) => handleClick(e, user.socketID)}
+                isSelected={user.socketID === userSelected}
               />
             );
           }

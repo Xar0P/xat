@@ -38,12 +38,12 @@ const Content: React.FC<{ user: User }> = ({ user }) => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const msg = new Message({ message, sender: user.name });
+    const msg = new Message({ message, senderID: user.id });
 
     setMessage('');
     if (userSelected) {
       if (socket) {
-        socket.emit('private message', {
+        socket.emit('newPrivateMessage', {
           msg,
           to: userSelected,
         });
@@ -59,16 +59,17 @@ const Content: React.FC<{ user: User }> = ({ user }) => {
   useEffect(() => {
     // socket.emit('private messages', userSelected);
 
-    socket.on('private message', ({ data, msg: newMessage }: any) => {
-      console.log('OIII');
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
-      setUsername(data.userName);
-    });
+    // socket.on('private message', ({ data, msg: newMessage }: any) => {
+    //   console.log(data);
+    //   // setMessages((prevMessages) => [...prevMessages, newMessage]);
+    //   // setUsername(data.userName);
+    // });
 
-    socket.on('new private message', ({ msg: newMessage, from }: any) => {
+    socket.on('newPrivateMessage', ({ msg: newMessage, from }: any) => {
+      console.log(newMessage, from);
       setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
-  }, [socket, userSelected, setMessages, setUsername]);
+  }, [socket]);
 
   useEffect(() => console.log(messages), [messages]);
 
@@ -99,7 +100,7 @@ const Content: React.FC<{ user: User }> = ({ user }) => {
             </Header>
             <Chat>
               {messages.map((message) => (
-                user.name === message.sender
+                user.id === message.senderID
                   ? (
                     <MessageSent key={message.id}>
                       <MessageContent>

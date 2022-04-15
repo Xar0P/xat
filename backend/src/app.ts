@@ -68,6 +68,11 @@ class App {
 
       socket.on('addUser', (data: UserSocket) => {
         addUser({ userID: data.id, socketID: socket.id, userName: data.name });
+        socket.data = {
+          userID: data.id,
+          socketID: socket.id,
+          userName: data.name,
+        };
         this.io.emit('getUsers', users);
       });
 
@@ -76,29 +81,24 @@ class App {
         this.io.emit('getUsers', users);
       });
 
-      socket.on('private message', async ({ msg, to }: {
+      socket.on('newPrivateMessage', async ({ msg, to }: {
         msg: Pick<Message, Exclude<keyof Message, 'receiver'>>,
         to: string
       }) => {
-        console.log('OI');
         const currentSocket = await this.io.in(to).fetchSockets();
+        const { userID } = currentSocket[0].data;
 
-        // axios.post('http://localhost:3333/messages/', {
-        //   id: msg.id,
-        //   message: msg.message,
-        //   sender: msg.sender,
-        //   date: msg.date,
-        //   receiver: to,
-        // });
-
-        socket.to(to).emit('new private message', {
-          msg,
-          from: socket.id,
+        axios.post('http://localhost:3333/messages/', {
+          id: msg.id,
+          message: msg.message,
+          senderID: msg.senderID,
+          date: msg.date,
+          receiver: userID,
         });
 
-        socket.emit('private message', {
-          data: currentSocket[0]?.data,
+        this.io.to(to).emit('newPrivateMessage', {
           msg,
+          from: socket.id,
         });
       });
     });
