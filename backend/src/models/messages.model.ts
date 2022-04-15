@@ -19,11 +19,11 @@ class Messages {
     return { data, error };
   }
 
-  async read(columns: string, query: Partial<Message>) {
+  async read(columns: string, filters: string) {
     const { data, error }: { data: Message[] | null, error: any } = await supabase
       .from('messages')
       .select(columns)
-      .match(query);
+      .or(filters);
 
     return { data, error };
   }

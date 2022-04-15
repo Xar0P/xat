@@ -10,3 +10,11 @@ declare interface UserResponse {
   socketID: string,
   userName: string,
 }
+
+declare interface MessageResponse {
+  id: string,
+  message: string,
+  receiver: number,
+  sender: number,
+  date: number
+}

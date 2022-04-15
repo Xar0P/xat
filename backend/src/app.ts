@@ -47,8 +47,6 @@ class App {
     let users: { userID: number; socketID: string; userName: string; }[] = [];
 
     this.io.on('connection', (socket: Socket) => {
-      console.log('a user connected');
-
       const addUser = ({
         userID,
         socketID,
@@ -81,6 +79,28 @@ class App {
         this.io.emit('getUsers', users);
       });
 
+      const reloadMessages = async ({
+        userID,
+        friendID,
+      }: {
+        userID: number,
+        friendID: number
+      }) => {
+        const data = await axios.get('http://localhost:3333/messages/', {
+          data: {
+            userID,
+            friendID,
+          },
+        });
+
+        const messages = data.data.data;
+        this.io.emit('reloadMessages', messages);
+      };
+
+      socket.on('reloadMessages', ({ userID, friendID }) => {
+        reloadMessages({ userID, friendID });
+      });
+
       socket.on('newPrivateMessage', async ({ msg, to }: {
         msg: Pick<Message, Exclude<keyof Message, 'receiver'>>,
         to: string
@@ -88,7 +108,7 @@ class App {
         const currentSocket = await this.io.in(to).fetchSockets();
         const { userID } = currentSocket[0].data;
 
-        axios.post('http://localhost:3333/messages/', {
+        await axios.post('http://localhost:3333/messages/', {
           id: msg.id,
           message: msg.message,
           senderID: msg.senderID,
@@ -96,10 +116,7 @@ class App {
           receiver: userID,
         });
 
-        this.io.to(to).emit('newPrivateMessage', {
-          msg,
-          from: socket.id,
-        });
+        reloadMessages({ userID, friendID: msg.senderID });
       });
     });
   }

@@ -38,6 +38,39 @@ class Message {
       });
     }
   }
+
+  async show(req: Request, res: Response) {
+    const errors: string[] = [];
+
+    try {
+      if (bodyExists(req)) {
+        return res.status(400).json({
+          errors: ['Corpo da requisição não foi encontrado!'],
+        });
+      }
+
+      const {
+        friendID,
+        userID,
+      } = req.body;
+
+      const { data, error } = await Messages.read(
+        'id, message, sender, receiver, date',
+        `sender.eq.${userID},and(receiver.eq.${friendID}),receiver.eq.${userID},and(sender.eq.${friendID})`,
+      );
+
+      if (checkErrorInDB(error, errors).length > 0) throw new Error();
+
+      return res.json({
+        data,
+      });
+    } catch (error) {
+      return res.status(400).json({
+        errors,
+        error,
+      });
+    }
+  }
 }
 
 export default new Message();

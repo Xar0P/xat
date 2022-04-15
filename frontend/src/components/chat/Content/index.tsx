@@ -1,8 +1,7 @@
 import React, {
-  ChangeEvent, useContext, useEffect, useState,
+  ChangeEvent, useContext, useEffect, useMemo, useState,
 } from 'react';
 import { useSelector } from 'react-redux';
-import { io, Socket } from 'socket.io-client';
 
 import { Message } from '../../../services/chat';
 import { selectUserSelected } from '../../../store/modules/Chat/reducer';
@@ -33,8 +32,14 @@ const Content: React.FC<{ user: User }> = ({ user }) => {
   const { socket, users } = useContext(SocketContext);
   const userSelected = useSelector(selectUserSelected);
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState<Array<Message>>([]);
+  const [messages, setMessages] = useState<Array<MessageResponse>>([]);
   const [username, setUsername] = useState('');
+  const userSelectedObj = useMemo(
+    () => users.find(
+      (user) => user && user.socketID === userSelected,
+    ),
+    [userSelected],
+  );
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -47,31 +52,23 @@ const Content: React.FC<{ user: User }> = ({ user }) => {
           msg,
           to: userSelected,
         });
-
-        console.log(msg);
-        // socket.emit('private message', {
-
-        // });
       }
     }
   };
 
   useEffect(() => {
-    // socket.emit('private messages', userSelected);
+    const username = userSelectedObj && userSelectedObj.userName;
+    setUsername(username || '');
 
-    // socket.on('private message', ({ data, msg: newMessage }: any) => {
-    //   console.log(data);
-    //   // setMessages((prevMessages) => [...prevMessages, newMessage]);
-    //   // setUsername(data.userName);
-    // });
+    if (userSelectedObj) {
+      socket.emit('reloadMessages', {
+        userID: user.id,
+        friendID: userSelectedObj.userID,
+      });
 
-    socket.on('newPrivateMessage', ({ msg: newMessage, from }: any) => {
-      console.log(newMessage, from);
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
-    });
-  }, [socket]);
-
-  useEffect(() => console.log(messages), [messages]);
+      socket.on('reloadMessages', (messages) => setMessages(messages));
+    }
+  }, [userSelected]);
 
   return (
     <Container>
@@ -100,7 +97,7 @@ const Content: React.FC<{ user: User }> = ({ user }) => {
             </Header>
             <Chat>
               {messages.map((message) => (
-                user.id === message.senderID
+                user.id === message.sender
                   ? (
                     <MessageSent key={message.id}>
                       <MessageContent>
@@ -118,28 +115,13 @@ const Content: React.FC<{ user: User }> = ({ user }) => {
                     </MessageReceived>
                   )
               ))}
-              {/* <MessageSent>
-                <MessageContent>
-                  lets do this quick
-                </MessageContent>
-                <MessageDate>10:03 AM</MessageDate>
-              </MessageSent>
-              <MessageReceived>
-                <MessageContent>
-                  What do u think about creating some additional screens for our case?
-                </MessageContent>
-                <MessageDate>10:03 AM</MessageDate>
-              </MessageReceived> */}
             </Chat>
             <WrapperInput>
               <form onSubmit={handleSubmit}>
                 <InputMessage
                   type="text"
                   placeholder="Escreva uma mensagem..."
-                  onChange={(e: ChangeEvent<{ value: string; }>) => {
-                    console.log(message);
-                    return setMessage(e.target.value);
-                  }}
+                  onChange={(e: ChangeEvent<{ value: string; }>) => setMessage(e.target.value)}
                   value={message}
                 />
               </form>
