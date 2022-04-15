@@ -92,7 +92,7 @@ export const MoreIcon = styled.div`${iconCSS}`;
 /* CHAT */
 export const Chat = styled.div`
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
 
   width: 100%;
 
