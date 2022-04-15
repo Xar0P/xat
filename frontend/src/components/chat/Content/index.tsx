@@ -30,7 +30,7 @@ import {
 import { SocketContext } from '../../../context/socket';
 
 const Content: React.FC<{ user: User }> = ({ user }) => {
-  const socket = useContext(SocketContext);
+  const { socket, users } = useContext(SocketContext);
   const userSelected = useSelector(selectUserSelected);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Array<Message>>([]);

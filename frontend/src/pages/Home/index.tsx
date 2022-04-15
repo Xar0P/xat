@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { Container } from './Home.styles';
@@ -9,13 +9,37 @@ import { SocketContext, socket } from '../../context/socket';
 
 const Home: React.FC = () => {
   const token = useSelector(selectToken);
-  const user = decodeJWT<User>(token);
+  const currentUser = decodeJWT<User>(token);
+  const [users, setUsers] = useState<Array<UserResponse | false>>([]);
+
+  useEffect(() => {
+    socket.emit('addUser', {
+      name: currentUser.name,
+      id: currentUser.id,
+    });
+  }, []);
+
+  useEffect(() => {
+    socket.on('getUsers', (rootUsers: UserResponse[]) => {
+      const users = rootUsers.filter((user) => {
+        if (user.userName === currentUser.name) return false;
+        return user;
+      });
+      setUsers(
+        users,
+      );
+    });
+  }, [socket]);
+
+  const chatContext = useMemo(() => ({
+    socket, users,
+  }), [users, socket]);
 
   return (
-    <SocketContext.Provider value={socket}>
+    <SocketContext.Provider value={chatContext}>
       <Container>
-        <ContactBar user={user} />
-        <Content user={user} />
+        <ContactBar />
+        <Content user={currentUser} />
       </Container>
     </SocketContext.Provider>
   );
