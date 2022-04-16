@@ -19,6 +19,6 @@ const chatSlice = createSlice({
   },
 });
 
-export const selectUserSelected = (state: State) => state.reducer.chat.selectedUser;
+export const selectUserSelected = (state: State) => state.chat.selectedUser;
 export const { selectedUser } = chatSlice.actions;
 export default chatSlice.reducer;

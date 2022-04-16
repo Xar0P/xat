@@ -8,7 +8,6 @@ import { authApi } from '../../services/api/Auth';
 
 const reducersToPersist = combineReducers({
   user: userReducer,
-  chat: chatReducer,
 });
 
 const persistConfig = {
@@ -20,6 +19,7 @@ const persistedReducer = persistReducer(persistConfig, reducersToPersist);
 
 const reducer = {
   reducer: persistedReducer,
+  chat: chatReducer,
   [authApi.reducerPath]: authApi.reducer,
 };
 
