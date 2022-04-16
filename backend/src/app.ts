@@ -85,7 +85,7 @@ class App {
       }: {
         userID: number,
         friendID: number
-      }) => {
+      }, to = '') => {
         const data = await axios.get('http://localhost:3333/messages/', {
           data: {
             userID,
@@ -94,7 +94,12 @@ class App {
         });
 
         const messages = data.data.data;
-        socket.emit('reloadMessages', messages);
+        if (to) {
+          this.io.to(to).emit('reloadMessages', messages);
+          socket.emit('reloadMessages', messages);
+        } else {
+          socket.emit('reloadMessages', messages);
+        }
       };
 
       socket.on('reloadMessages', ({ userID, friendID }) => {
@@ -116,7 +121,7 @@ class App {
           receiver: userID,
         });
 
-        reloadMessages({ userID, friendID: msg.senderID });
+        reloadMessages({ userID, friendID: msg.senderID }, to);
       });
     });
   }
