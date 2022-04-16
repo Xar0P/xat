@@ -19,11 +19,12 @@ class Messages {
     return { data, error };
   }
 
-  async read(columns: string, filters: string) {
+  async read(columns: string, column1: string, value1: any, column2: string, value2: any) {
     const { data, error }: { data: Message[] | null, error: any } = await supabase
       .from('messages')
       .select(columns)
-      .or(filters);
+      .in(column1, value1)
+      .in(column2, value2);
 
     return { data, error };
   }

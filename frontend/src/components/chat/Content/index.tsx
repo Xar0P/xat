@@ -48,12 +48,10 @@ const Content: React.FC<{ user: User }> = ({ user }) => {
 
     setMessage('');
     if (userSelected) {
-      if (socket) {
-        socket.emit('newPrivateMessage', {
-          msg,
-          to: userSelected,
-        });
-      }
+      socket.emit('newPrivateMessage', {
+        msg,
+        to: userSelected,
+      });
     }
   };
 

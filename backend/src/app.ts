@@ -94,7 +94,7 @@ class App {
         });
 
         const messages = data.data.data;
-        this.io.emit('reloadMessages', messages);
+        socket.emit('reloadMessages', messages);
       };
 
       socket.on('reloadMessages', ({ userID, friendID }) => {

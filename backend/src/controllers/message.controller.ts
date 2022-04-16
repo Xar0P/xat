@@ -56,7 +56,11 @@ class Message {
 
       const { data, error } = await Messages.read(
         'id, message, sender, receiver, date',
-        `sender.eq.${userID},and(receiver.eq.${friendID}),receiver.eq.${userID},and(sender.eq.${friendID})`,
+        'sender',
+        [userID, friendID],
+
+        'receiver',
+        [userID, friendID],
       );
 
       if (checkErrorInDB(error, errors).length > 0) throw new Error();
