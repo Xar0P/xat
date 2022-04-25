@@ -95,6 +95,7 @@ class App {
 
         const messages = data.data.data;
         if (to) {
+          console.log('~~~S??');
           this.io.to(to).emit('newPrivateMessage', messages);
           socket.emit('newPrivateMessage', messages);
         } else {

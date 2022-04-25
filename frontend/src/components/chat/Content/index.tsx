@@ -4,9 +4,10 @@ import React, {
 import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment';
 
-import { Console } from 'console';
 import { Message } from '../../../services/chat';
-import { selectUserSelected, addChatMessage, selectChatMessages } from '../../../store/modules/Chat/reducer';
+import {
+  selectUserSelected, addChatMessage, selectChatMessages, updateChatMessage,
+} from '../../../store/modules/Chat/reducer';
 import {
   Container,
   Header,
@@ -51,7 +52,7 @@ const Content: React.FC<{ user: User }> = ({ user }) => {
       friendID: userSelectedObj.userID,
     });
 
-    socket.on('reloadMessages', (messages) => {
+    socket.off('reloadMessages').on('reloadMessages', (messages) => {
       setMessages(messages);
       dispatch(addChatMessage({
         [userSelectedObj.userID]: messages,
@@ -84,30 +85,29 @@ const Content: React.FC<{ user: User }> = ({ user }) => {
 
         if (userStored) {
           setMessages(userStored[userSelectedObj.userID]);
-          socket.on('newPrivateMessage', (messages) => {
-            setMessages(messages);
-          });
-          console.log('ACESSAR STORAGE');
         } else {
-          console.log('STORAGE');
           reloadMessages(userSelectedObj);
         }
       } else {
-        console.log('PRIMEIRO STORAGE');
         reloadMessages(userSelectedObj);
       }
-
-      // socket.on('reloadMessages', (messages) => setMessages(messages));
     }
   }, [userSelected]);
 
   useEffect(() => {
-    if (chatMessages) {
-      console.log(chatMessages);
+    if (userSelectedObj) {
+      if (chatMessages) {
+        socket.off('newPrivateMessage').on('newPrivateMessage', (messages: MessageResponse[]) => {
+          dispatch(updateChatMessage({
+            userID: userSelectedObj.userID,
+            newMessages: messages,
+            prevChatMessages: chatMessages,
+          }));
+          setMessages(messages);
+        });
+      }
     }
-
-    // console.log(chatMessages);
-  }, [chatMessages]);
+  }, [socket, userSelected, chatMessages]);
 
   return (
     <Container>
