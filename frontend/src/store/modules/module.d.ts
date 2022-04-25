@@ -1,4 +1,8 @@
 /* eslint-disable no-unused-vars */
+interface chatMessage {
+  [userID: string]: Array<MessageResponse>
+}
+
 interface State {
   authApi: {},
   reducer: {
@@ -8,5 +12,6 @@ interface State {
   }
   chat: {
     selectedUser: string
+    chatMessages: Array<chatMessage>
   }
 }

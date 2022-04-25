@@ -95,8 +95,8 @@ class App {
 
         const messages = data.data.data;
         if (to) {
-          this.io.to(to).emit('reloadMessages', messages);
-          socket.emit('reloadMessages', messages);
+          this.io.to(to).emit('newPrivateMessage', messages);
+          socket.emit('newPrivateMessage', messages);
         } else {
           socket.emit('reloadMessages', messages);
         }

@@ -1,11 +1,12 @@
 import React, {
   ChangeEvent, useContext, useEffect, useMemo, useState,
 } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment';
 
+import { Console } from 'console';
 import { Message } from '../../../services/chat';
-import { selectUserSelected } from '../../../store/modules/Chat/reducer';
+import { selectUserSelected, addChatMessage, selectChatMessages } from '../../../store/modules/Chat/reducer';
 import {
   Container,
   Header,
@@ -30,8 +31,10 @@ import {
 import { SocketContext } from '../../../context/socket';
 
 const Content: React.FC<{ user: User }> = ({ user }) => {
+  const dispatch = useDispatch();
   const { socket, users } = useContext(SocketContext);
   const userSelected = useSelector(selectUserSelected);
+  const chatMessages = useSelector(selectChatMessages);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Array<MessageResponse>>([]);
   const [username, setUsername] = useState('');
@@ -41,6 +44,20 @@ const Content: React.FC<{ user: User }> = ({ user }) => {
     ),
     [userSelected],
   );
+
+  function reloadMessages(userSelectedObj: any) {
+    socket.emit('reloadMessages', {
+      userID: user.id,
+      friendID: userSelectedObj.userID,
+    });
+
+    socket.on('reloadMessages', (messages) => {
+      setMessages(messages);
+      dispatch(addChatMessage({
+        [userSelectedObj.userID]: messages,
+      }));
+    });
+  }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -60,14 +77,37 @@ const Content: React.FC<{ user: User }> = ({ user }) => {
     setUsername(username || '');
 
     if (userSelectedObj) {
-      socket.emit('reloadMessages', {
-        userID: user.id,
-        friendID: userSelectedObj.userID,
-      });
+      if (chatMessages) {
+        const userStored = chatMessages.find(
+          (chatMessage) => chatMessage[userSelectedObj.userID],
+        );
 
-      socket.on('reloadMessages', (messages) => setMessages(messages));
+        if (userStored) {
+          setMessages(userStored[userSelectedObj.userID]);
+          socket.on('newPrivateMessage', (messages) => {
+            setMessages(messages);
+          });
+          console.log('ACESSAR STORAGE');
+        } else {
+          console.log('STORAGE');
+          reloadMessages(userSelectedObj);
+        }
+      } else {
+        console.log('PRIMEIRO STORAGE');
+        reloadMessages(userSelectedObj);
+      }
+
+      // socket.on('reloadMessages', (messages) => setMessages(messages));
     }
   }, [userSelected]);
+
+  useEffect(() => {
+    if (chatMessages) {
+      console.log(chatMessages);
+    }
+
+    // console.log(chatMessages);
+  }, [chatMessages]);
 
   return (
     <Container>
