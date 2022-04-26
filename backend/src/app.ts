@@ -95,11 +95,10 @@ class App {
 
         const messages = data.data.data;
         if (to) {
-          console.log('~~~S??');
-          this.io.to(to).emit('newPrivateMessage', messages);
-          socket.emit('newPrivateMessage', messages);
+          this.io.to(to).emit('newPrivateMessage', { messages, friendID });
+          socket.emit('newPrivateMessage', { messages, friendID });
         } else {
-          socket.emit('reloadMessages', messages);
+          socket.emit('reloadMessages', { messages, friendID });
         }
       };
 

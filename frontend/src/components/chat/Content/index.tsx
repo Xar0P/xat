@@ -46,26 +46,36 @@ const Content: React.FC<{ user: User }> = ({ user }) => {
     [userSelected],
   );
 
-  function reloadMessages(userSelectedObj: any) {
+  const reloadMessages = (userSelectedObj: any) => {
     socket.emit('reloadMessages', {
       userID: user.id,
       friendID: userSelectedObj.userID,
     });
 
-    socket.off('reloadMessages').on('reloadMessages', (messages) => {
-      setMessages(messages);
+    socket.off('reloadMessages').on('reloadMessages', ({ messages, friendID }) => {
+      if (userSelectedObj.userID === friendID) {
+        setMessages(messages);
+      }
       dispatch(addChatMessage({
         [userSelectedObj.userID]: messages,
       }));
     });
-  }
+  };
+
+  const updateChatMessages = (userID: number) => {
+    dispatch(updateChatMessage({
+      userID,
+      newMessages: messages,
+      prevChatMessages: chatMessages,
+    }));
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const msg = new Message({ message, senderID: user.id });
 
     setMessage('');
-    if (userSelected) {
+    if (userSelected && userSelectedObj) {
       socket.emit('newPrivateMessage', {
         msg,
         to: userSelected,
@@ -97,13 +107,20 @@ const Content: React.FC<{ user: User }> = ({ user }) => {
   useEffect(() => {
     if (userSelectedObj) {
       if (chatMessages) {
-        socket.off('newPrivateMessage').on('newPrivateMessage', (messages: MessageResponse[]) => {
-          dispatch(updateChatMessage({
-            userID: userSelectedObj.userID,
-            newMessages: messages,
-            prevChatMessages: chatMessages,
-          }));
-          setMessages(messages);
+        socket.off('newPrivateMessage').on('newPrivateMessage', ({
+          messages, friendID,
+        }: {
+          messages: MessageResponse[], friendID: number
+        }) => {
+          if (friendID === user.id) {
+            updateChatMessages(userSelectedObj.userID);
+          } else {
+            updateChatMessages(friendID);
+          }
+          if (userSelectedObj.userID === friendID || user.id === friendID) {
+            setMessages(messages);
+          }
+          // Fazer notificação aqui/Alterar estado global de notificação
         });
       }
     }
