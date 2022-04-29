@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 
 import { Container, WrapperForm } from './Login.styles';
 import { TextField, CheckBox, Button } from '../../../components/forms';
@@ -71,7 +71,7 @@ const Login: React.FC = () => {
 
         <div>
           <CheckBox content="Lembrar" />
-          <a href="#1">Esqueceu a senha?</a>
+          <Link to="/register/">Não tem uma conta?</Link>
         </div>
 
         <Button text="Login" color="#20DF7F" />

@@ -1,7 +1,7 @@
 /* eslint-disable react/button-has-type */
 import React, { ChangeEvent, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 import { Container, WrapperForm } from './Register.styles';
 import { TextField, Button } from '../../../components/forms';
@@ -67,7 +67,7 @@ const Register: React.FC = () => {
         />
 
         <div>
-          <a href="#1">Esqueceu sua senha?</a>
+          <Link to="/login/">Já tem uma conta?</Link>
         </div>
 
         <Button text="Registrar" color="#20DF7F" />
