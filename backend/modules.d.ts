@@ -5,5 +5,6 @@ declare namespace NodeJS {
     SUPABASE_KEY: string,
     TOKEN_SECRET: string,
     TOKEN_EXPIRATION: string,
+    BACKEND_URL: string
   }
 }

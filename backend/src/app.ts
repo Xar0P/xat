@@ -8,7 +8,9 @@ import axios from 'axios';
 import { Token, User, Message as MessageRoutes } from './routes';
 import { Message, UserSocket } from './module';
 
-const allowedOrigin = 'http://localhost:3000';
+require('dotenv').config();
+
+const allowedOrigin = process.env.BACKEND_URL;
 
 class App {
   private readonly app: express.Express;
@@ -86,7 +88,7 @@ class App {
         userID: number,
         friendID: number
       }, to = '') => {
-        const data = await axios.get('http://localhost:3333/messages/', {
+        const data = await axios.get(`${process.env.BACKEND_URL}/messages/`, {
           data: {
             userID,
             friendID,
@@ -113,7 +115,7 @@ class App {
         const currentSocket = await this.io.in(to).fetchSockets();
         const { userID } = currentSocket[0].data;
 
-        await axios.post('http://localhost:3333/messages/', {
+        await axios.post(`${process.env.BACKEND_URL}/messages/`, {
           id: msg.id,
           message: msg.message,
           senderID: msg.senderID,
