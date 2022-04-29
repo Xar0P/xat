@@ -10,7 +10,7 @@ import { Message, UserSocket } from './module';
 
 require('dotenv').config();
 
-const allowedOrigin = process.env.BACKEND_URL;
+const allowedOrigin = process.env.ALLOWED_URL;
 
 class App {
   private readonly app: express.Express;
