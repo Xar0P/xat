@@ -1,8 +1,6 @@
-import dotenv from 'dotenv';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-dotenv.config();
-const baseUrl = process.env.BACKEND_URL;
+const baseUrl = 'https://xat-backend.onrender.com';
 
 interface User {
   name: string,
