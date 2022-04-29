@@ -1,6 +1,8 @@
+import dotenv from 'dotenv';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-const baseUrl = 'http://localhost:3333/';
+dotenv.config();
+const baseUrl = process.env.BACKEND_URL;
 
 interface User {
   name: string,
